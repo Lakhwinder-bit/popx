@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import { Navigate, useNavigate } from "react-router-dom";
+import Button from "../compontent/button";
 export default function CreateAccount() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -9,6 +10,8 @@ export default function CreateAccount() {
     company: "",
     agency: "Yes",
   });
+const navigate = useNavigate();
+const [loading, setloading] = useState(false)
 
 
   const handleChange = (e) => {
@@ -24,7 +27,7 @@ export default function CreateAccount() {
     e.preventDefault();
 
 
-    alert("Account Created Successfully!");
+
   localStorage.setItem(
     "userData",
     JSON.stringify(formData)
@@ -39,7 +42,10 @@ export default function CreateAccount() {
       company: "",
       agency: "Yes",
     });
-
+  setloading(true)
+    setTimeout(()=>{
+     navigate("/account")
+    },1000)
   };
 
   const inputClass =
@@ -50,9 +56,9 @@ export default function CreateAccount() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-3">
-      <div className="w-full max-w-[400px] min-h-[95vh] bg-gray-50 border border-gray-300 rounded-2xl p-4 flex flex-col ">
+      <div className="w-full max-w-[400px] min-h-[95vh] bg-gray-50 border border-gray-300 rounded-2xl p-5 flex flex-col ">
         {/* Heading */}
-        <div className="mb-3">
+        <div className="mb-3 mt-5">
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
             Create your
           </h1>
@@ -185,12 +191,11 @@ export default function CreateAccount() {
           </div>
 
           {/* Button */}
-          <button
-            type="submit"
-            className=" w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-md font-semibold transition"
-          >
-            Create Account
-          </button>
+         <Button
+           text="Already Registered? Login"
+           loading={loading}
+           onClick={handleSubmit}
+         />
         </form>
       </div>
     </div>

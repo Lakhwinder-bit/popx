@@ -1,10 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import Button from "../compontent/button";
+import { Link } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+const [loadingBtn, setLoadingBtn] = useState("");
+const handleLogin = () => {
+  setLoadingBtn("login");
+
+  setTimeout(() => {
+    navigate("/login");
+  }, 1000);
+};
+
+const handleCreateAccount = () => {
+  setLoadingBtn("create");
+
+  setTimeout(() => {
+    navigate("/create");
+  }, 1000);
+};
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-3">
-      <div className="w-full max-w-[400px] h-[95vh] bg-gray-50 border border-gray-300 rounded-2xl p-2 overflow-hidden flex flex-col">
-
+      <div className="w-full max-w-[400px] h-[95vh] bg-gray-50 border border-gray-300 rounded-2xl p-5 overflow-hidden flex flex-col">
         {/* Image Section - 70% */}
         <div className="flex-[7]">
           <img
@@ -24,13 +43,17 @@ export default function Home() {
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magnam, cupiditate!
           </p>
 
-          <button className="w-full text-sm bg-violet-600 text-white py-2 rounded-md font-semibold cursor-pointer">
-            Create Account
-          </button>
-
-          <button className="w-full mt-3 text-sm bg-violet-200 text-gray-900 py-2 rounded-md font-semibold cursor-pointer">
-            Already Registered? Login
-          </button>
+<Button
+  text="Create Account"
+   loading={loadingBtn === "create"}
+  onClick={handleCreateAccount}
+/>
+<div className="mt-2"></div>
+        <Button
+  text="Already Registered? Login"
+  loading={loadingBtn === "login"}
+  onClick={handleLogin}
+/>
         </div>
 
       </div>

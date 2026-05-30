@@ -1,13 +1,17 @@
-import { Route, Router, Routes } from "react-router-dom";
-import HomePage from "../pages/home";
-import CreateAccount from "../pages/creteAccount";
- export default function AppRoutes(){
-    return(
-        <>
-        <Routes>
-            <Route path="/" element={<HomePage/>}/>
-            <Route path="/crete" element={<CreateAccount/>}/>
-        </Routes>
-        </>
-    )
+import { Routes, Route } from "react-router-dom";
+
+import Home from "../pages/home";
+import Login from "../pages/login";
+import Account from "../pages/account";
+import Create from "../pages/creteAccount"
+
+export default function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/account" element={<Account />} />
+      <Route path="/create" element={<Create />} />
+    </Routes>
+  );
 }
