@@ -1,10 +1,12 @@
 import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 export default function app(){
   return(
     <>
-    <div>
-      <h1 className="text-5xl text-violet-600 font-bold">This is main page</h1>
-    </div>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
     </>
   )
 }
