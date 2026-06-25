@@ -100,7 +100,7 @@ finally{
 />
  <div className="mt-2"></div>
         <Button
-  text="LogOut"
+  text="Logout"
   className=""
   loading={loadingBtn === "logout"}
   onClick={handlelogout}
