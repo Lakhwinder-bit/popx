@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Button from "../compontent/button";
 import { Link } from "react-router-dom";
-
 export default function Home() {
   const navigate = useNavigate();
 const [loadingBtn, setLoadingBtn] = useState("");

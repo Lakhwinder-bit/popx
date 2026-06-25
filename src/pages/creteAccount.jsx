@@ -1,18 +1,32 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import {
+  User,
+  Phone,
+  Mail,
+  Briefcase,
+  Lock,
+  UserPlus,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Button from "../compontent/button";
-export default function CreateAccount() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phone: "",
-    email: "",
-    password: "",
-    company: "",
-    agency: "Yes",
-  });
-const navigate = useNavigate();
-const [loading, setloading] = useState(false)
+import { register_api } from "../api/api_auth";
+import { validateRegisterForm } from "../utils/form_validaction";
 
+export default function CreateAccount() {
+  const navigate = useNavigate();
+
+  const [errors, setErrors] = useState({});
+  const [loadingBtn, setLoadingBtn] = useState("");
+
+  const [formData, setFormData] = useState({
+    name: "",
+    username: "",
+    mobile: "",
+    email: "",
+    designation: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,181 +35,310 @@ const [loading, setloading] = useState(false)
       ...prev,
       [name]: value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validationErrors = validateRegisterForm(formData);
 
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  localStorage.setItem(
-    "userData",
-    JSON.stringify(formData)
-  );
+    const { confirmPassword, ...userData } = formData;
 
+    try {
+      setLoadingBtn("add");
 
-    setFormData({
-      fullName: "",
-      phone: "",
-      email: "",
-      password: "",
-      company: "",
-      agency: "Yes",
-    });
-  setloading(true)
-    setTimeout(()=>{
-     navigate("/account")
-    },1000)
+      const data = await register_api(userData);
+      console.log(data);
+
+      alert("Register Successfully");
+
+      setFormData({
+        name: "",
+        username: "",
+        mobile: "",
+        email: "",
+        designation: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      setErrors({});
+
+      navigate("/account");
+    } catch (error) {
+      console.log(error.response?.data);
+
+      alert(
+        error.response?.data?.message ||
+          "Something went wrong"
+      );
+    } finally {
+      setLoadingBtn("");
+    }
   };
 
   const inputClass =
-    "peer w-full border-2 border-gray-200 rounded-md px-3 p-3 focus:outline-none focus:border-gray-400";
-
-  const labelClass =
-    "absolute left-3 bg-gray-50 px-1 text-gray-500 transition-all duration-200 top-4 peer-placeholder-shown:top-3  peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:text-sm peer-focus:font-bold  peer-focus:text-violet-600 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:text-sm";
+    "w-full border border-gray-300 rounded-md py-3 pl-10 pr-4 outline-none focus:border-blue-500";
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-3">
-      <div className="w-full max-w-[400px] min-h-[95vh] bg-gray-50 border border-gray-300 rounded-2xl p-5 flex flex-col ">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-md shadow-md p-8">
         {/* Heading */}
-        <div className="mb-3 mt-5">
-          <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-            Create your
-          </h1>
-          <h1 className="text-3xl font-bold text-gray-900">
-            PopX account
-          </h1>
-        </div>
-
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col flex-1  justify-around"
-        >
-          {/* Full Name */}
-          <div className="relative">
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder=" "
-              className={inputClass}
-              required
-            />
-            <label htmlFor="fullName" className={labelClass}>
-              Full Name *
-            </label>
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="bg-blue-600 p-4 rounded-full text-white">
+            <UserPlus size={22} />
           </div>
 
-          {/* Phone */}
-          <div className="relative">
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder=" "
-              className={inputClass}
-              required
-            />
-            <label htmlFor="phone" className={labelClass}>
-              Phone Number *
+          <div>
+            <h1 className="text-xl font-bold text-blue-700">
+              Create New Account
+            </h1>
+
+            <p className="text-gray-500">
+              Please fill in the details to register
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
+          <div>
+            <label className="font-semibold text-gray-700">
+              Registration Name
             </label>
+
+            <div className="relative mt-2">
+              <User
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                className={inputClass}
+              />
+            </div>
+
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.name}
+              </p>
+            )}
+          </div>
+
+          {/* Username */}
+          <div>
+            <label className="font-semibold text-gray-700">
+              Username
+            </label>
+
+            <div className="relative mt-2">
+              <User
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Enter your username"
+                className={inputClass}
+              />
+            </div>
+
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.username}
+              </p>
+            )}
+          </div>
+
+          {/* Mobile */}
+          <div>
+            <label className="font-semibold text-gray-700">
+              Mobile
+            </label>
+
+            <div className="relative mt-2">
+              <Phone
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="text"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder="Enter your mobile number"
+                className={inputClass}
+              />
+            </div>
+
+            {errors.mobile && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.mobile}
+              </p>
+            )}
           </div>
 
           {/* Email */}
-          <div className="relative">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder=" "
-              className={inputClass}
-              required
-            />
-            <label htmlFor="email" className={labelClass}>
-              Email Address *
+          <div>
+            <label className="font-semibold text-gray-700">
+              Email-id
             </label>
+
+            <div className="relative mt-2">
+              <Mail
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email-id"
+                className={inputClass}
+              />
+            </div>
+
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* Designation */}
+          <div>
+            <label className="font-semibold text-gray-700">
+              Designation
+            </label>
+
+            <div className="relative mt-2">
+              <Briefcase
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <select
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="">
+                  Select your designation
+                </option>
+                <option value="Developer">
+                  Developer
+                </option>
+                <option value="Designer">
+                  Designer
+                </option>
+                <option value="Manager">
+                  Manager
+                </option>
+              </select>
+            </div>
+
+            {errors.designation && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.designation}
+              </p>
+            )}
           </div>
 
           {/* Password */}
-          <div className="relative">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder=" "
-              className={inputClass}
-              required
-            />
-            <label htmlFor="password" className={labelClass}>
-              Password *
-            </label>
-          </div>
-
-          {/* Company */}
-          <div className="relative">
-            <input
-              type="text"
-              id="company"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              placeholder=" "
-              className={inputClass}
-            />
-            <label htmlFor="company" className={labelClass}>
-              Company Name
-            </label>
-          </div>
-
-          {/* Agency */}
           <div>
-            <p className="font-medium text-gray-700 mb-3">
-              Are you an Agency?{" "}
-              <span className="text-red-500">*</span>
-            </p>
+            <label className="font-semibold text-gray-700">
+              Password
+            </label>
 
-            <div className="flex gap-8">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="agency"
-                  value="Yes"
-                  checked={formData.agency === "Yes"}
-                  onChange={handleChange}
-                  className="accent-violet-600"
-                />
-                Yes
-              </label>
+            <div className="relative mt-2">
+              <Lock
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="agency"
-                  value="No"
-                  checked={formData.agency === "No"}
-                  onChange={handleChange}
-                  className="accent-violet-600"
-                />
-                No
-              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className={inputClass}
+              />
             </div>
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password}
+              </p>
+            )}
           </div>
 
-          {/* Button */}
-         <Button
-           text="Already Registered? Login"
-           loading={loading}
-           onClick={handleSubmit}
-         />
+          {/* Confirm Password */}
+          <div>
+            <label className="font-semibold text-gray-700">
+              Confirm Password
+            </label>
+
+            <div className="relative mt-2">
+              <Lock
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password"
+                className={inputClass}
+              />
+            </div>
+
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
+
+          <Button
+            text="Create Account"
+            loading={loadingBtn === "add"}
+          />
+
+          <p className="text-center text-gray-500">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              Login
+            </a>
+          </p>
         </form>
       </div>
     </div>

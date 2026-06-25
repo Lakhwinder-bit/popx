@@ -1,16 +1,49 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Button from "../compontent/button";
+import { getMe_api } from "../api/api_auth";
+import { logOut_api } from "../api/api_auth";
 export default function Account() {
 const navigate = useNavigate()
 const [loadingBtn, setLoadingBtn] = useState("");
   const [data,setdata]=useState({})
   useEffect(()=>{
-    const storedData = JSON.parse(localStorage.getItem("userData"));
-    if(storedData){
-      setdata(storedData)
-    }
+ fetchUser()
   },[])
+
+const fetchUser = async ()=>{
+  try {
+    const res = await getMe_api();
+    setdata(res.data)
+  
+  } catch (error) {
+     console.error(error.response?.data);
+       alert(
+      error.response?.data?.message ||
+      "Something went wrong"
+    );
+  }
+
+}
+const handlelogout = async ()=>{
+try {
+   setLoadingBtn("logout");
+   const res = await logOut_api();;
+  setTimeout(() => {
+    navigate("/create");
+  }, 2000);
+  
+} catch (error) {
+  console.error(error.response?.data?.message)
+     alert(
+      error.response?.data?.message ||
+      "Something went wrong"
+    );
+}
+finally{
+
+}
+}
 
   const handleLogin = ()=>{
     setLoadingBtn("back");
@@ -32,7 +65,7 @@ const [loadingBtn, setLoadingBtn] = useState("");
         </div>
         <div className="bg-gray-200 p-3 rounded-xl pt-5">
           {/* Profile Section */}
-          <div className="flex gap-4">
+          <div className="flex flex-col items-center justify-center text-center gap-4">
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200"
@@ -48,24 +81,29 @@ const [loadingBtn, setLoadingBtn] = useState("");
 
             <div>
               <h2 className="text-2xl font-semibold text-gray-700 ">
-              {data?.fullName || "Guest User"}
+              {data?.username || "Guest User"}
               </h2>
               <p className="text-lg text-gray-600">
                {data?.email || "No Email"}
               </p>
+                <p className="text-lg text-gray-600">
+               {data?.designation || "No designation"}
+              </p>
             </div>
           </div>
 
-          {/* Description */}
-          <p className="mt-6 text-gray-600 leading-6 mb-3">
-            Lorem Ipsum Dolor Sit Amet, Consetetur Sadipscing Elitr,
-            Sed Diam Nonumy Eirmod Tempor Invidunt Ut Labore Et
-            Dolore Magna Aliquyam Erat, Sed Diam
-          </p>
+      <div className="mt-5"></div>
         <Button
   text="Back To Home.."
   loading={loadingBtn === "back"}
   onClick={handleLogin}
+/>
+ <div className="mt-2"></div>
+        <Button
+  text="LogOut"
+  className=""
+  loading={loadingBtn === "logout"}
+  onClick={handlelogout}
 />
         </div>
           <div className="border-b border-dashed border-gray-400 mt-6"></div>
